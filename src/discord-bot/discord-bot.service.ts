@@ -5,7 +5,7 @@ import { UpdateDiscordBotDto } from './dto/update-discord-bot.dto';
 @Injectable()
 export class DiscordBotService {
   create(createDiscordBotDto: CreateDiscordBotDto) {
-    return 'This action adds a new discordBot';
+    return 'This action adds a new discordBot' + createDiscordBotDto;
   }
 
   findAll() {
@@ -17,7 +17,7 @@ export class DiscordBotService {
   }
 
   update(id: number, updateDiscordBotDto: UpdateDiscordBotDto) {
-    return `This action updates a #${id} discordBot`;
+    return `This action updates a #${id} discordBot` + updateDiscordBotDto;
   }
 
   remove(id: number) {
