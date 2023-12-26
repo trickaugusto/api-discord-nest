@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int            @id @default(autoincrement())
+  username     String
+  nickname     String
+  password     String
+  email        String         @unique
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @updatedAt
+  Bot          Bot[]
+  Subscription Subscription[]
+  Server       Server[]
+}
+
+model Server {
+  id         Int      @id @default(autoincrement())
+  name       String
+  status     String
+  owner_id   Int
+  created_at DateTime @default(now())
+  User       User     @relation(fields: [owner_id], references: [id])
+}
+
+model Bot {
+  id           Int            @id @default(autoincrement())
+  name         String
+  token        Int
+  owner_id     Int
+  created_by   Int
+  created_at   DateTime       @default(now())
+  User         User           @relation(fields: [owner_id], references: [id])
+  Input        Input[]
+  Subscription Subscription[]
+}
+
+model Input {
+  id         Int        @id @default(autoincrement())
+  input_text String
+  bot_id     Int
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  Bot        Bot        @relation(fields: [bot_id], references: [id])
+  Response   Response[]
+}
+
+model Response {
+  id            Int      @id @default(autoincrement())
+  response_text String
+  input_id      Int
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+  Input         Input    @relation(fields: [input_id], references: [id])
+}
+
+model Subscription {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  bot_id     Int
+  start_date DateTime
+  end_date   DateTime
+  status     String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  User       User     @relation(fields: [user_id], references: [id])
+  Bot        Bot      @relation(fields: [bot_id], references: [id])
+}
