@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { DiscordBotService } from './discord-bot.service';
 import { CreateDiscordBotDto } from './dto/create-discord-bot.dto';
 import { UpdateDiscordBotDto } from './dto/update-discord-bot.dto';
@@ -23,7 +31,10 @@ export class DiscordBotController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDiscordBotDto: UpdateDiscordBotDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateDiscordBotDto: UpdateDiscordBotDto,
+  ) {
     return this.discordBotService.update(+id, updateDiscordBotDto);
   }
 
