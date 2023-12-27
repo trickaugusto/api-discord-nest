@@ -14,8 +14,11 @@
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest --silent --colors --noStackTrace --passWithNoTests",
-    "test:unit": "npm test -- --watch jest-unit-config.js",
-    "test:integration": "npm test -- --watch jest-integrationconfig.js",
+
+    "test:unit": "npm test -- --watch test/unit",
+    "test:integration": "npm test -- --watch test/integration",
+    "test:e2e": "npm test -- --watch test/e2e",
+    
     "test:staged": "npm test -- --findRelatedTests",
     "test:ci": "npm test --",
     "prepare": "husky install"
@@ -65,7 +68,7 @@
       "ts"
     ],
     "rootDir": ".",
-    "testRegex": ".*\\-spec\\.ts$",
+    "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },

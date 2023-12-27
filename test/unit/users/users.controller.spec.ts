@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersController } from './users.controller';
-import { UsersService } from './users.service';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { UsersController } from '../../../src/users/users.controller';
+import { UsersService } from '../../../src/users/users.service';
+import { PrismaService } from '../../../src/prisma/prisma.service';
 import { faker } from '@faker-js/faker';
 import { NotFoundException } from '@nestjs/common';
 import { validate } from 'class-validator';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from '../../../src/users/dto/create-user.dto';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -43,7 +43,7 @@ describe('UsersController', () => {
     mockUser = {
       id: 1,
       username: faker.internet.userName(),
-      nickname: faker.name.firstName(),
+      nickname: faker.person.firstName(),
       password: faker.internet.password(),
       email: faker.internet.email(),
     };
