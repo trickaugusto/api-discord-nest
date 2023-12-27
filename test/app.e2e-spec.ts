@@ -15,10 +15,22 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
+  it('/users/:id (GET)', () => {
     return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+      .get('/users/abc')
+      .expect(400)
+      .expect((res) => {
+        if (
+          res.body.message !== 'Validation failed (numeric string is expected)'
+        ) {
+          throw new Error('Validation message does not match');
+        }
+      });
+  });
+
+  // TO DO - add more tests
+
+  afterAll(async () => {
+    await app.close();
   });
 });
