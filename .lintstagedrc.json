@@ -1,0 +1,7 @@
+{
+    "*.ts": [
+        "pnpm run lint",
+        "pnpm run test:staged",
+        "git add"
+    ]
+}
