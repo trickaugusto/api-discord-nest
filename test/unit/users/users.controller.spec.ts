@@ -117,6 +117,12 @@ describe('UsersController', () => {
     expect(result).toBeUndefined();
   });
 
+  it('should throw 404 error when user not found on get', async () => {
+    service.findOne = jest.fn().mockResolvedValueOnce(null);
+
+    await expect(controller.findOne('1')).rejects.toThrow(NotFoundException);
+  });
+
   it('should throw 404 error when user not found on update', async () => {
     service.findOne = jest.fn().mockResolvedValueOnce(null);
 
