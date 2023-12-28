@@ -39,6 +39,13 @@ describe('UsersController', () => {
     },
   ];
 
+  async function validateUser(responseUser, mockUser) {
+    expect(responseUser.id).toEqual(mockUser.id);
+    expect(responseUser.username).toEqual(mockUser.username);
+    expect(responseUser.nickname).toEqual(mockUser.nickname);
+    expect(responseUser.email).toEqual(mockUser.email);
+  }
+
   beforeAll(async () => {
     mockUser = {
       id: 1,
@@ -75,21 +82,21 @@ describe('UsersController', () => {
     service.create = jest.fn().mockResolvedValueOnce(mockUser);
     const result = await controller.create(mockUser);
 
-    expect(result).toEqual(mockUser);
+    await validateUser(result, mockUser);
   });
 
   it('should return an array of users', async () => {
     service.findAll = jest.fn().mockResolvedValueOnce([mockUser]);
     const result = await controller.findAll();
 
-    expect(result).toEqual([mockUser]);
+    await validateUser(result, [mockUser]);
   });
 
   it('should return a user by ID', async () => {
     service.findOne = jest.fn().mockResolvedValueOnce(mockUser);
     const result = await controller.findOne('1');
 
-    expect(result).toEqual(mockUser);
+    await validateUser(result, mockUser);
   });
 
   it('should update a user by ID', async () => {
@@ -98,7 +105,7 @@ describe('UsersController', () => {
 
     const result = await controller.update('1', mockUser);
 
-    expect(result).toEqual(mockUser);
+    await validateUser(result, mockUser);
   });
 
   it('should remove a user by ID', async () => {

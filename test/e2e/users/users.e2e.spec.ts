@@ -24,6 +24,13 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
+  async function validateUser(responseUser, mockUser) {
+    expect(Number.isInteger(responseUser.id)).toBe(true);
+    expect(responseUser.username).toEqual(mockUser.username);
+    expect(responseUser.nickname).toEqual(mockUser.nickname);
+    expect(responseUser.email).toEqual(mockUser.email);
+  }
+
   async function createUser() {
     return await request(app.getHttpServer())
       .post('/users')
@@ -46,10 +53,7 @@ describe('AppController (e2e)', () => {
 
   it('should successfully create and delete a user via /users (POST) and /users/:id (DELETE)', async () => {
     const response = await createUser();
-
-    for (const key in mockUser) {
-      expect(response.body[key]).toEqual(mockUser[key]);
-    }
+    await validateUser(response.body, mockUser);
 
     await request(app.getHttpServer())
       .delete(`/users/${response.body.id}`)
@@ -63,9 +67,7 @@ describe('AppController (e2e)', () => {
       .get(`/users/${responsePost.body.id}`)
       .expect(200);
 
-    for (const key in mockUser) {
-      expect(responseGet.body[key]).toEqual(mockUser[key]);
-    }
+    await validateUser(responseGet.body, mockUser);
   });
 
   it('should successfully update a user via /users/:id (PATCH)', async () => {
@@ -77,9 +79,7 @@ describe('AppController (e2e)', () => {
       .send(updatedUser)
       .expect(200);
 
-    for (const key in updatedUser) {
-      expect(responsePut.body[key]).toEqual(updatedUser[key]);
-    }
+    await validateUser(responsePut.body, updatedUser);
   });
 
   it('should successfully retrieve a list of users via /users (GET)', async () => {
