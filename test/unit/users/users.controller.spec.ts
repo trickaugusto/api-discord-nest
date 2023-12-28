@@ -94,7 +94,7 @@ describe('UsersController', () => {
 
   it('should return a user by ID', async () => {
     service.findOne = jest.fn().mockResolvedValueOnce(mockUser);
-    const result = await controller.findOne('1');
+    const result = await controller.findOne(1);
 
     await validateUser(result, mockUser);
   });
@@ -103,7 +103,7 @@ describe('UsersController', () => {
     service.update = jest.fn().mockResolvedValueOnce(mockUser);
     service.findOne = jest.fn().mockResolvedValueOnce(mockUser);
 
-    const result = await controller.update('1', mockUser);
+    const result = await controller.update(1, mockUser);
 
     await validateUser(result, mockUser);
   });
@@ -112,21 +112,21 @@ describe('UsersController', () => {
     service.findOne = jest.fn().mockResolvedValueOnce(mockUser);
 
     service.remove = jest.fn().mockResolvedValueOnce(undefined);
-    const result = await controller.remove('1');
+    const result = await controller.remove(1);
 
-    expect(result).toBeUndefined();
+    expect(result).toEqual({});
   });
 
   it('should throw 404 error when user not found on get', async () => {
     service.findOne = jest.fn().mockResolvedValueOnce(null);
 
-    await expect(controller.findOne('1')).rejects.toThrow(NotFoundException);
+    await expect(controller.findOne(1)).rejects.toThrow(NotFoundException);
   });
 
   it('should throw 404 error when user not found on update', async () => {
     service.findOne = jest.fn().mockResolvedValueOnce(null);
 
-    await expect(controller.update('1', mockUser)).rejects.toThrow(
+    await expect(controller.update(1, mockUser)).rejects.toThrow(
       NotFoundException,
     );
   });
@@ -134,7 +134,7 @@ describe('UsersController', () => {
   it('should throw 404 error when user not found on remove', async () => {
     service.findOne = jest.fn().mockResolvedValueOnce(null);
 
-    await expect(controller.remove('1')).rejects.toThrow(NotFoundException);
+    await expect(controller.remove(1)).rejects.toThrow(NotFoundException);
   });
 
   testCasesDtoValidators.forEach((tc) => {
