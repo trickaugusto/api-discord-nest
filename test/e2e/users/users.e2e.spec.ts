@@ -3,10 +3,13 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../../../src/app.module';
 import { faker } from '@faker-js/faker';
+import { JwtService } from '@nestjs/jwt';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
+  let jwtService: JwtService;
   let mockUser;
+  const createdUsersByTest = [];
 
   beforeEach(async () => {
     mockUser = {
@@ -20,6 +23,7 @@ describe('AppController (e2e)', () => {
       imports: [AppModule],
     }).compile();
 
+    jwtService = moduleFixture.get<JwtService>(JwtService);
     app = moduleFixture.createNestApplication();
     await app.init();
   });
@@ -32,15 +36,23 @@ describe('AppController (e2e)', () => {
   }
 
   async function createUser() {
-    return await request(app.getHttpServer())
+    const user = await request(app.getHttpServer())
       .post('/users')
       .send(mockUser)
       .expect(201);
+
+    const accessToken = jwtService.sign({ userId: user.body.id });
+    createdUsersByTest.push({ id: user.body.id, accessToken: accessToken });
+
+    return { response: user, accessToken: accessToken };
   }
 
-  it('should return 400 and validation message when non-numeric id is passed to /users/:id (GET)', () => {
+  it('should return 400 and validation message when non-numeric id is passed to /users/:id (GET)', async () => {
+    const { accessToken } = await createUser();
+
     return request(app.getHttpServer())
       .get('/users/abc')
+      .set('Authorization', `Bearer ${accessToken}`)
       .expect(400)
       .expect((res) => {
         if (
@@ -52,30 +64,33 @@ describe('AppController (e2e)', () => {
   });
 
   it('should successfully create and delete a user via /users (POST) and /users/:id (DELETE)', async () => {
-    const response = await createUser();
+    const { response, accessToken } = await createUser();
     await validateUser(response.body, mockUser);
 
     await request(app.getHttpServer())
       .delete(`/users/${response.body.id}`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .expect(200);
   });
 
   it('should successfully retrieve a user via /users/:id (GET)', async () => {
-    const responsePost = await createUser();
+    const { response, accessToken } = await createUser();
 
     const responseGet = await request(app.getHttpServer())
-      .get(`/users/${responsePost.body.id}`)
+      .get(`/users/${response.body.id}`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .expect(200);
 
     await validateUser(responseGet.body, mockUser);
   });
 
   it('should successfully update a user via /users/:id (PATCH)', async () => {
-    const responsePost = await createUser();
+    const { response, accessToken } = await createUser();
     const updatedUser = { ...mockUser, username: 'Updated Name' };
 
     const responsePut = await request(app.getHttpServer())
-      .patch(`/users/${responsePost.body.id}`)
+      .patch(`/users/${response.body.id}`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .send(updatedUser)
       .expect(200);
 
@@ -83,10 +98,11 @@ describe('AppController (e2e)', () => {
   });
 
   it('should successfully retrieve a list of users via /users (GET)', async () => {
-    await createUser();
+    const { accessToken } = await createUser();
 
     const responseGet = await request(app.getHttpServer())
       .get('/users')
+      .set('Authorization', `Bearer ${accessToken}`)
       .expect(200);
 
     expect(Array.isArray(responseGet.body)).toBe(true);
@@ -94,6 +110,12 @@ describe('AppController (e2e)', () => {
   });
 
   afterAll(async () => {
+    for (const user of createdUsersByTest) {
+      await request(app.getHttpServer())
+        .delete(`/users/${user.id}`)
+        .set('Authorization', `Bearer ${user.accessToken}`);
+    }
+
     await app.close();
   });
 });
