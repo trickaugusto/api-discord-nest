@@ -5,7 +5,7 @@ import { AppModule } from 'src/app.module';
 import { faker } from '@faker-js/faker';
 import { JwtService } from '@nestjs/jwt';
 
-describe('AuthController (integration)', () => {
+describe('AuthController (e2e)', () => {
   let app: INestApplication;
   let mockUser;
   let jwtService: JwtService;
