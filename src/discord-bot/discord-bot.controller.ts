@@ -6,40 +6,73 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
+  UseGuards,
+  NotFoundException,
 } from '@nestjs/common';
 import { DiscordBotService } from './discord-bot.service';
 import { CreateDiscordBotDto } from './dto/create-discord-bot.dto';
 import { UpdateDiscordBotDto } from './dto/update-discord-bot.dto';
+import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { DiscordBotEntity } from './entities/discord-bot.entity';
 
 @Controller('discord-bot')
 export class DiscordBotController {
   constructor(private readonly discordBotService: DiscordBotService) {}
 
   @Post()
-  create(@Body() createDiscordBotDto: CreateDiscordBotDto) {
-    return this.discordBotService.create(createDiscordBotDto);
+  @UseGuards(JwtAuthGuard)
+  async create(@Body() createDiscordBotDto: CreateDiscordBotDto) {
+    return new DiscordBotEntity(
+      await this.discordBotService.create(createDiscordBotDto),
+    );
   }
 
-  @Get()
-  findAll() {
-    return this.discordBotService.findAll();
+  @Get('owner/:owner_id')
+  async findAllByOwnerId(@Param('owner_id', ParseIntPipe) owner_id: number) {
+    const botList = await this.discordBotService.findAllByOwnerId(owner_id);
+
+    return botList.map((bot) => new DiscordBotEntity(bot));
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.discordBotService.findOne(+id);
+  @UseGuards(JwtAuthGuard)
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    const bot = await this.discordBotService.findOne(id);
+
+    if (!bot) {
+      throw new NotFoundException(`Bot #${id} not found`);
+    }
+
+    return new DiscordBotEntity(bot);
   }
 
   @Patch(':id')
-  update(
-    @Param('id') id: string,
+  @UseGuards(JwtAuthGuard)
+  async update(
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateDiscordBotDto: UpdateDiscordBotDto,
   ) {
-    return this.discordBotService.update(+id, updateDiscordBotDto);
+    const bot = await this.discordBotService.findOne(id);
+
+    if (!bot) {
+      throw new NotFoundException(`Bot #${id} not found`);
+    }
+
+    return new DiscordBotEntity(
+      await this.discordBotService.update(id, updateDiscordBotDto),
+    );
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.discordBotService.remove(+id);
+  @UseGuards(JwtAuthGuard)
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    const bot = await this.discordBotService.findOne(id);
+
+    if (!bot) {
+      throw new NotFoundException(`Bot #${id} not found`);
+    }
+
+    return new DiscordBotEntity(await this.discordBotService.remove(id));
   }
 }
