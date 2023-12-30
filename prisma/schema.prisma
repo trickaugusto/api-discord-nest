@@ -30,17 +30,18 @@ model Server {
   status     String
   owner_id   Int
   created_at DateTime @default(now())
+  updated_at DateTime   @updatedAt
   User       User     @relation(fields: [owner_id], references: [id])
 }
 
 model Bot {
   id           Int            @id @default(autoincrement())
   name         String
-  token        Int
+  token        String
   owner_id     Int
-  created_by   Int
   created_at   DateTime       @default(now())
-  User         User           @relation(fields: [owner_id], references: [id])
+  updated_at DateTime   @updatedAt
+  User         User           @relation(fields: [owner_id], references: [id], onDelete: Cascade)
   Input        Input[]
   Subscription Subscription[]
 }
