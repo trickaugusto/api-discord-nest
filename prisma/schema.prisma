@@ -21,17 +21,6 @@ model User {
   updated_at   DateTime       @updatedAt
   Bot          Bot[]
   Subscription Subscription[]
-  Server       Server[]
-}
-
-model Server {
-  id         Int      @id @default(autoincrement())
-  name       String
-  status     String
-  owner_id   Int
-  created_at DateTime @default(now())
-  updated_at DateTime   @updatedAt
-  User       User     @relation(fields: [owner_id], references: [id])
 }
 
 model Bot {
