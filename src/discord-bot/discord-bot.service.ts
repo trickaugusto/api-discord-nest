@@ -11,19 +11,19 @@ export class DiscordBotService {
     return this.prisma.bot.create({ data: createDiscordBotDto });
   }
 
-  findAllByOwnerId(owner_id: number) {
+  async findAllByOwnerId(owner_id: number) {
     return this.prisma.bot.findMany({ where: { owner_id } });
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
     return this.prisma.bot.findUnique({ where: { id } });
   }
 
-  update(id: number, updateDiscordBotDto: UpdateDiscordBotDto) {
+  async update(id: number, updateDiscordBotDto: UpdateDiscordBotDto) {
     return this.prisma.bot.update({ where: { id }, data: updateDiscordBotDto });
   }
 
-  remove(id: number) {
+  async remove(id: number) {
     return this.prisma.bot.delete({ where: { id } });
   }
 }

@@ -75,4 +75,15 @@ export class DiscordBotController {
 
     return new DiscordBotEntity(await this.discordBotService.remove(id));
   }
+
+  /* @Post('/discord-bot/:id/interaction')
+  @UseGuards(JwtAuthGuard)
+  async createInput(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() createInteractionDto: CreateInteractionDto,
+  ) {
+    return new DiscordBotEntity(
+      await this.discordBotService.createInput(id, createInteractionDto),
+    );
+  } */
 }

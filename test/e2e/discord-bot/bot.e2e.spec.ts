@@ -11,8 +11,14 @@ describe('DiscordBot (e2e)', () => {
   let accessToken: string;
   let userId: string;
   let botId: string;
+  let interaction: {
+    id: string;
+    input: string;
+    responses: string[];
+  };
+  let interactionObj;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -20,14 +26,36 @@ describe('DiscordBot (e2e)', () => {
     jwtService = moduleFixture.get<JwtService>(JwtService);
     app = moduleFixture.createNestApplication();
     await app.init();
+  });
 
+  beforeAll(async () => {
+    createAllEntities();
+  })
+
+  async function createAllEntities() {
     const user = await createUser();
     userId = user.response.body.id;
     accessToken = user.accessToken;
 
-    const bot = await createBot(userId, accessToken);
-    botId = bot.body.id;
-  });
+    botId = (await createBot(userId, accessToken)).body.id;
+    interaction = (await createInteraction()).body;
+  }
+
+  async function createInteraction() {
+    interactionObj = {
+      input: faker.lorem.text(),
+      responses: [
+        faker.lorem.text(),
+        faker.lorem.text()
+      ]
+    };
+
+    return await request(app.getHttpServer())
+      .post(`/discord-bot/${botId}/interaction`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send(interactionObj)
+      .expect(201);
+  }
 
   async function createUser() {
     const mockUser = {
@@ -120,10 +148,31 @@ describe('DiscordBot (e2e)', () => {
     expect(updatedBot.body.name).toEqual('updatedBotName');
   });
 
-  afterEach(async () => {
+  it('should return 201 when created input and responses via /discord-bot/:id/input (POST)', async () => {
+    expect(interaction.input).toEqual(interactionObj.input);
+    expect(interaction.responses).toEqual(interactionObj.responses);
+  })
+
+  it('should return 200 when retrieving all interactions by bot_id via /discord-bot/:id/interaction (GET)', async () => {
+    const retrievedInteractions = await request(app.getHttpServer())
+      .get(`/discord-bot/${botId}/interaction`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(200);
+
+    expect(retrievedInteractions.body.length).toBeGreaterThanOrEqual(0);
+    expect(retrievedInteractions.body).toEqual(interactionObj);
+  });
+
+  afterAll(async () => {
     await request(app.getHttpServer())
       .delete(`/users/${userId}`)
-      .set('Authorization', `Bearer ${accessToken}`);
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(200);
+
+    await request(app.getHttpServer())
+      .delete(`/discord-bot/${botId}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(200);
 
     await app.close();
   });

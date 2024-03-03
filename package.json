@@ -14,11 +14,11 @@
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest --silent --colors --noStackTrace --passWithNoTests",
-    "test:unit": "npm test -- --watch test/unit",
-    "test:integration": "npm test -- --watch test/integration",
-    "test:e2e": "npm test -- --watch test/e2e",
-    "test:staged": "npm test -- --findRelatedTests",
-    "test:ci": "npm test --",
+    "test:unit": "pnpm test -- --watch test/unit",
+    "test:integration": "pnpm test -- --watch test/integration",
+    "test:e2e": "pnpm test -- --watch test/e2e",
+    "test:staged": "pnpm test -- --findRelatedTests",
+    "test:ci": "pnpm test --",
     "prepare": "husky install"
   },
   "dependencies": {
