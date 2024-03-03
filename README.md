@@ -6,14 +6,14 @@ This repo is an API about a project that I'm building in public. I will make som
 https://allurereport.org/docs/jest/
 
 ## I abandoned the project
-This project was abandoned because I'm not interested in it anymore. 
-But, I will keep here. Maybe I will use it in the future.
+This project has been abandoned because I'm no longer interested in it. But I'm going to stay here. Maybe I'll use it in the future.
 
-This project learned me a lot of things. I learned about:
-- Jest 
+This project has taught me many things. I've learned about:
+
+- Jest
 - Testing with TDD
 - Node.js
 - Husky
-- Lint-staged
+- Staging
 
-And with this knowledge was used in my job. So, I'm happy with the result. Ty =)
+And with this knowledge I used it in my work. So I'm happy with the result. Ty =)
